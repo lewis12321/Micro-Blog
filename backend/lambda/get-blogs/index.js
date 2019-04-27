@@ -10,7 +10,7 @@ exports.handler = (event, ctx, callback) => {
 const getBlogs = (event, callback) => {
 
     var responseBody = {}
-
+    
     var params = {
         TableName: 'blogs'
     };
@@ -44,7 +44,8 @@ const getBlogs = (event, callback) => {
         var response = {
             "statusCode": 200,
             "headers": {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             },
             "body": JSON.stringify(responseBody),
             "isBase64Encoded": false

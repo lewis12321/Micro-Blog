@@ -8,11 +8,11 @@ exports.handler = (event, ctx, callback) => {
 };
 
 const getBlog = (event, callback) => {
-
+    
     var responseBody = {}
 
-    if (event.pathParameters != null) {
-
+    if(event.pathParameters != null) {
+        
         var id = event.pathParameters.id;
         var params = {
             TableName: 'blogs',
@@ -20,50 +20,52 @@ const getBlog = (event, callback) => {
                 'id': { S: id }
             }
         };
-
+    
         ddb.getItem(params, function (err, data) {
-
+            
             if (err) {
                 console.log("Error", err);
-
+                
                 responseBody = {
                     "event": event
                 };
-
+                
             } else {
                 console.log("Success", data.Item);
-
+                
                 responseBody = {
                     "blog": data.Item
                 };
             }
-
+            
             var response = {
                 "statusCode": 200,
                 "headers": {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
                 },
                 "body": JSON.stringify(responseBody),
                 "isBase64Encoded": false
             };
             callback(null, response)
         });
-
+        
     } else {
         responseBody = {
             "blog": "ID FIELD IS EMPTY",
             "event": event
         };
-
+        
         var response = {
             "statusCode": 200,
             "headers": {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             },
             "body": JSON.stringify(responseBody),
             "isBase64Encoded": false
         };
-
+        
         callback(null, response)
     }
 
