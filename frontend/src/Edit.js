@@ -32,8 +32,8 @@ class Edit extends React.Component {
   }
 
   save() {
-    const markdown = this.state.markdown
-    axios.post('http://192.168.86.165:8080/api/blog', markdown, {
+    const markdown = { "text": this.state.markdown }
+    axios.post('https://n17hksuqz7.execute-api.eu-west-1.amazonaws.com/dev/api/blog', markdown, {
       headers: {
         "Content-Type": "text/plain"
       }

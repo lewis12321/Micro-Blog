@@ -26,9 +26,10 @@ class View extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://192.168.86.165:8080/api/blog/ddacbc0f-ea86-47f0-9301-32ee2d901b45.json')
+    axios.get('https://n17hksuqz7.execute-api.eu-west-1.amazonaws.com/dev/api/blog/06c398c0-68fc-11e9-ba75-fb5e90696eba')
     .then((resp) => {
-      this.setState({markdown: resp.data})
+      console.log(resp);
+      this.setState({markdown: resp.data.blog.text.S})
     })
     .catch(function (error) {
       console.log(error);
