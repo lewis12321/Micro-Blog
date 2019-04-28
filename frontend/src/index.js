@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import axios from 'axios';
+
+export const axiosInstance = axios.create({baseURL: 'https://n17hksuqz7.execute-api.eu-west-1.amazonaws.com/dev'})
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
