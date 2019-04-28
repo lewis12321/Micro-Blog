@@ -1,0 +1,18 @@
+version: 0.1
+phases:
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install --prefix frontend
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run --prefix frontend build
+  post_build:
+    commands:
+      # copy the contents of /build to S3
+      - aws s3 cp --recursive --acl public-read ./build s3://${DeployBucket}/ 
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
