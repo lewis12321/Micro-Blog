@@ -1,10 +1,8 @@
-import React from 'react';
-import Create from './Create';
-import View from './View';
-import AddIcon from '@material-ui/icons/Add';
+import { Grid, Paper, Typography, withStyles } from '@material-ui/core';
 import Fab from '@material-ui/core/Fab';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Paper, Typography, Grid, withStyles } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import React from 'react';
+import { Route } from "react-router-dom";
 
 const styles = theme => ({
   button: {
@@ -12,12 +10,6 @@ const styles = theme => ({
   },
   root: {
     flexGrow: 1,
-  },
-  paper: {
-    ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
-    cursor: 'pointer'
   },
   fab: {
     margin: 0,

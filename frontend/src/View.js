@@ -1,8 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Markdown } from 'react-showdown';
-import { axiosInstance } from './index';
+import ReactMarkdown from 'react-markdown';
 
 const styles = theme => ({
   button: {
@@ -34,15 +33,13 @@ class View extends React.Component {
     const markdown = this.state.markdown
     const { classes } = this.props;
     return (
-      <div className={classes.root}>
         <Grid container spacing={24}
           direction="column"
-          alignItems="center">>
+          alignItems="center">
           <Grid item xs={6}>
-            <Markdown className={classes.paper} markup={markdown} />
+            <ReactMarkdown className={classes.paper} source={markdown} />
           </Grid>
         </Grid>
-      </div>
     );
   }
 

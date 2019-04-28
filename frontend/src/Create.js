@@ -1,12 +1,11 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import { Markdown } from 'react-showdown'
-import TextField from '@material-ui/core/TextField';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { axiosInstance } from './index';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { Typography, Modal } from '@material-ui/core';
 
 const styles = theme => ({
   button: {
@@ -28,6 +27,10 @@ const styles = theme => ({
     padding: theme.spacing.unit * 4,
     outline: 'none',
   },
+  markdownViewer: {
+    wordWrap: 'break-word',
+    fontFamily: 'Playfair Display'
+  }
 });
 
 class Create extends React.Component {
@@ -59,8 +62,8 @@ class Create extends React.Component {
 
   getTitle() {
     const markdown = this.state.markdown
-    if (markdown.match("^\# .*")) {
-      return markdown.match("^\# .*")[0].replace("# ", "")
+    if (markdown.match("^# .*")) {
+      return markdown.match("^# .*")[0].replace("# ", "")
     }
     return ""
   }
@@ -73,7 +76,7 @@ class Create extends React.Component {
       if (!subtitle && line.match("^## ")) {
         subtitle = true
       }
-      if (subtitle && line.match(/^[a-z0-9\s\,\.]+$/i)) {
+      if (subtitle && line.match(/^[a-z0-9\s,.]+$/i)) {
         return line
       }
     }
@@ -84,6 +87,7 @@ class Create extends React.Component {
       markdown: this.state.markdown,
       title: this.state.title,
       description: this.state.description,
+      open: false
     })
   }
 
@@ -94,7 +98,7 @@ class Create extends React.Component {
       <div className={classes.root}>
         <Grid container spacing={24}>
           <Grid item xs={12} style={{ textAlign: "center" }}>
-            <Typography variant="h6" id="modal-title">
+            <Typography variant="h4" id="modal-title">
               Create Your Blog
             </Typography>
           </Grid>
@@ -107,7 +111,7 @@ class Create extends React.Component {
             />
           </Grid>
           <Grid item xs={6}>
-            <Markdown className={classes.paper} markup={markdown} />
+            <ReactMarkdown className={classes.markdownViewer} source={markdown} />
           </Grid>
           <Grid item xs={1}>
             <Button variant="contained" color="primary" className={classes.button} onClick={() => this.create()}>
@@ -115,32 +119,44 @@ class Create extends React.Component {
           </Button>
           </Grid>
         </Grid>
-        <Modal
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
+        <Dialog
           open={this.state.open}
           onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
         >
-          <div className={classes.paper}>
-            <Typography variant="h6" id="modal-title">
-              Create Your Blog
-            </Typography>
+          <DialogTitle id="form-dialog-title">Create Blog</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Finally, give your blog a title and description
+            </DialogContentText>
             <TextField
+              autoFocus
+              margin="dense"
               label="Title"
-              className={classes.textField}
               value={this.state.title}
+              fullWidth
               onChange={this.handleChange('title')}
             />
             <TextField
+              autoFocus
+              margin="dense"
+              id="description"
               label="Description"
-              className={classes.textField}
               value={this.state.description}
-              onChange={this.handleChange('description')}
+              fullWidth
               multiline={true}
+              onChange={this.handleChange('description')}
             />
-            <Button onClick={() => this.saveBlog()}>Create</Button>
-          </div>
-        </Modal>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleClose()} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={() => this.saveBlog()} color="primary">
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }
