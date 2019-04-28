@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Typography, withStyles, InputBase } from '@material-ui/core';
 import React from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { HashRouter as Router, Route } from "react-router-dom";
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import SearchIcon from '@material-ui/icons/Search';
 import Create from './Create';

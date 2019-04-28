@@ -79,9 +79,11 @@ class Home extends React.Component {
             {this.state.blogs.map((blog, i) => <BlogSummary blog={blog} />)}
           </Grid>
         </Grid>
-        <Fab className={classes.fab} color='primary' href="/create">
-          <AddIcon />
-        </Fab>
+        <Route render={({ history }) => (
+          <Fab className={classes.fab} color='primary' onClick={() => history.push("/create")}>
+            <AddIcon />
+          </Fab>
+        )} />
       </div>
     );
   }
