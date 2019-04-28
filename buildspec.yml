@@ -11,7 +11,7 @@ phases:
   post_build:
     commands:
       # copy the contents of /build to S3
-      - aws s3 rm s3://bucket-microtrans-blog --recursive
+      - aws s3 rm s3://microtrans-blog --recursive
       - aws s3 cp --recursive $CODEBUILD_SRC_DIR/frontend/build s3://microtrans-blog/
       - aws s3 cp --acl public-read 
         --cache-control="max-age=0, no-cache, no-store, must-revalidate" 
