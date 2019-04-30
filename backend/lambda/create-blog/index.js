@@ -12,12 +12,20 @@ const createBlog = (event, callback) => {
 
     var blog = JSON.parse(event.body);
 
-    var uuid = uuidv1();
+    var _id = uuidv1();
+    var title = blog.title;
+    var id = title.split(' ').join('-') + '-' + _id.split('-')[0];
+    var description = blog.description;
+    var markdown = blog.markdown;
+
     var params = {
         TableName: 'blogs',
         Item: {
-            'id': { S: uuid },
-            'text': { S: blog.text }
+            '_id': { S: _id },
+            'id': { S: id },
+            'title': { S: title },
+            'description': { S: description },
+            'markdown': { S: markdown }
         }
     };
 

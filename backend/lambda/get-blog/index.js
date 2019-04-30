@@ -8,36 +8,36 @@ exports.handler = (event, ctx, callback) => {
 };
 
 const getBlog = (event, callback) => {
-    
+
     var responseBody = {}
 
-    if(event.pathParameters != null) {
-        
-        var id = event.pathParameters.id;
+    if (event.pathParameters != null) {
+
+        var _id = event.pathParameters._id;
         var params = {
             TableName: 'blogs',
             Key: {
-                'id': { S: id }
+                '_id': { S: _id }
             }
         };
-    
+
         ddb.getItem(params, function (err, data) {
-            
+
             if (err) {
                 console.log("Error", err);
-                
+
                 responseBody = {
                     "event": event
                 };
-                
+
             } else {
                 console.log("Success", data.Item);
-                
+                data = flatten(data.Item)
                 responseBody = {
-                    "blog": data.Item
+                    "blog": data
                 };
             }
-            
+
             var response = {
                 "statusCode": 200,
                 "headers": {
@@ -49,13 +49,13 @@ const getBlog = (event, callback) => {
             };
             callback(null, response)
         });
-        
+
     } else {
         responseBody = {
             "blog": "ID FIELD IS EMPTY",
             "event": event
         };
-        
+
         var response = {
             "statusCode": 200,
             "headers": {
@@ -65,8 +65,34 @@ const getBlog = (event, callback) => {
             "body": JSON.stringify(responseBody),
             "isBase64Encoded": false
         };
-        
+
         callback(null, response)
     }
 
+}
+
+function flatten(o) {
+
+    var descriptors = ['L', 'M', 'N', 'S'];
+    for (let d of descriptors) {
+        if (o.hasOwnProperty(d)) {
+            return o[d];
+        }
+    }
+
+    Object.keys(o).forEach((k) => {
+
+        for (let d of descriptors) {
+            if (o[k].hasOwnProperty(d)) {
+                o[k] = o[k][d];
+            }
+        }
+        if (Array.isArray(o[k])) {
+            o[k] = o[k].map(e => flatten(e))
+        } else if (typeof o[k] === 'object') {
+            o[k] = flatten(o[k])
+        }
+    });
+
+    return o;
 }

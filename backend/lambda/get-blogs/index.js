@@ -26,7 +26,7 @@ const getBlogs = (event, callback) => {
             console.log("Scan succeeded.");
             data.Items.forEach(function (itemdata) {
                 console.log("Item :", ++count, itemdata);
-                blogs.push(itemdata)
+                blogs.push(flatten(itemdata))
             });
 
             // continue scanning if we have more items
@@ -54,4 +54,30 @@ const getBlogs = (event, callback) => {
 
     }
 
+}
+
+function flatten(o) {
+
+    var descriptors = ['L', 'M', 'N', 'S'];
+    for (let d of descriptors) {
+        if (o.hasOwnProperty(d)) {
+            return o[d];
+        }
+    }
+
+    Object.keys(o).forEach((k) => {
+
+        for (let d of descriptors) {
+            if (o[k].hasOwnProperty(d)) {
+                o[k] = o[k][d];
+            }
+        }
+        if (Array.isArray(o[k])) {
+            o[k] = o[k].map(e => flatten(e))
+        } else if (typeof o[k] === 'object') {
+            o[k] = flatten(o[k])
+        }
+    });
+
+    return o;
 }

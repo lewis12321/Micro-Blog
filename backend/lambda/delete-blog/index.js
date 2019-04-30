@@ -9,13 +9,13 @@ exports.handler = (event, ctx, callback) => {
 const deleteBlog = (event, callback) => {
 
     var req = JSON.parse(event.body);
-    var id = req.id
-    console.log(id)
+    var _id = req.id
+    console.log(_id)
 
     var params = {
         TableName: "blogs",
         Key: {
-            "id": { S: id }
+            "_id": { S: _id }
         }
     };
 
