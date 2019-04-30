@@ -20,12 +20,34 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  currentTime:
+  createBlog:
     handler: create.handler
     events:
       - http:
           path: api/blogs
+          method: post
+  getBlogs:
+    handler: get-all.handler
+    events:
+      - http:
+          path: api/blogs
           method: get
+  deleteBlog:
+    handler: delete.handler
+    events:
+      - http:
+          path: api/blogs
+          method: delete
+  getBlog:
+    handler: get.handler
+    events:
+      - http:
+          path: api/blogs/{id}
+          method: get
+          request: 
+            parameters: 
+              paths: 
+                id: true
 
 resources:
   Resources:
