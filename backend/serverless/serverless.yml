@@ -66,9 +66,11 @@ resources:
           -
             AttributeName: _id
             KeyType: HASH
-          -
-            AttributeName: id
-            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: id-index
+            KeySchema: 
+            - AttributeName: id
+              KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
