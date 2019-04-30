@@ -1,6 +1,6 @@
 const uuidv1 = require('uuid/v1');
 var AWS = require('aws-sdk');
-AWS.config.update({ region: 'eu-west-1' });
+AWS.config.update({ region: 'eu-west-2' });
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
