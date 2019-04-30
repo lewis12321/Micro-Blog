@@ -13,11 +13,11 @@ const getBlog = (event, callback) => {
 
     if (event.pathParameters != null) {
 
-        var _id = event.pathParameters._id;
+        var id = event.pathParameters.id;
         var params = {
             TableName: 'blogs-dev',
             Key: {
-                '_id': { S: _id }
+                'id': { S: id }
             }
         };
 

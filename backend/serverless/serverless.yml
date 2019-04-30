@@ -59,9 +59,15 @@ resources:
           -
             AttributeName: _id
             AttributeType: S
+          -
+            AttributeName: id
+            AttributeType: S
         KeySchema:
           -
             AttributeName: _id
+            KeyType: HASH
+          -
+            AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
