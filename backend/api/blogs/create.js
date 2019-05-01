@@ -28,27 +28,27 @@ const createBlog = (event, callback) => {
         }
     };
 
-    var responseBody = {};
-
     ddb.putItem(params, function (err, data) {
+        var statusCode = 200
         if (err) {
+            statusCode = 500
             console.log("Error", err);
-            responseBody = {
-                "status": "FAILED"
-            };
         } else {
             console.log("Success", data);
-            responseBody = {
-                "status": "SUCCESS"
-            };
         }
         var response = {
-            "statusCode": 200,
+            "statusCode": statusCode,
             "headers": {
+                "statusCode": statusCode,
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*"
             },
-            "body": JSON.stringify(responseBody),
+            "body": JSON.stringify({
+                'id': id,
+                'title': title,
+                'description': description,
+                'markdown': markdown
+            }),
             "isBase64Encoded": false
         };
 

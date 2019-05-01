@@ -1,5 +1,5 @@
 var AWS = require("aws-sdk");
-AWS.config.update({ region: "eu-west-1" });
+AWS.config.update({ region: "eu-west-2" });
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
 exports.handler = (event, ctx, callback) => {
@@ -8,40 +8,33 @@ exports.handler = (event, ctx, callback) => {
 
 const deleteBlog = (event, callback) => {
 
-    var req = JSON.parse(event.body);
-    var _id = req.id
-    console.log(_id)
+    var id = event.pathParameters.id;
+    console.log(id)
 
     var params = {
-        TableName: "blogs",
+        TableName: 'blogs-dev',
         Key: {
-            "_id": { S: _id }
+            "id": { S: id }
         }
     };
 
-    var responseBody = {};
-
     console.log("Attempting delete...");
     ddb.deleteItem(params, function (err, data) {
+        var statusCode = 200
         if (err) {
+            statusCode = 500
             console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-            responseBody = {
-                "status": "FAILED"
-            };
         } else {
             console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
-            responseBody = {
-                "status": "SUCCESS"
-            };
         }
 
         var response = {
-            "statusCode": 200,
+            "statusCode": statusCode,
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*"
             },
-            "body": JSON.stringify(responseBody),
+            "body": JSON.stringify(data),
             "isBase64Encoded": false
         };
 

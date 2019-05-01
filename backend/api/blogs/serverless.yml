@@ -36,8 +36,12 @@ functions:
     handler: delete.handler
     events:
       - http:
-          path: api/blogs
+          path: api/blogs/{id}
           method: delete
+          request: 
+            parameters: 
+              paths: 
+                id: true
   getBlog:
     handler: get.handler
     events:

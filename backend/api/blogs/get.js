@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-AWS.config.update({ region: 'eu-west-1' });
+AWS.config.update({ region: 'eu-west-2' });
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -13,11 +13,11 @@ const getBlog = (event, callback) => {
 
     if (event.pathParameters != null) {
 
-        var _id = event.pathParameters._id;
+        var id = event.pathParameters.id;
         var params = {
-            TableName: 'blogs',
+            TableName: 'blogs-dev',
             Key: {
-                '_id': { S: _id }
+                'id': { S: id }
             }
         };
 
@@ -33,9 +33,7 @@ const getBlog = (event, callback) => {
             } else {
                 console.log("Success", data.Item);
                 data = flatten(data.Item)
-                responseBody = {
-                    "blog": data
-                };
+                responseBody = data
             }
 
             var response = {

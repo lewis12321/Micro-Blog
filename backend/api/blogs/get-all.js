@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-AWS.config.update({ region: 'eu-west-1' });
+AWS.config.update({ region: 'eu-west-2' });
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -12,7 +12,7 @@ const getBlogs = (event, callback) => {
     var responseBody = {}
     
     var params = {
-        TableName: 'blogs'
+        TableName: 'blogs-dev'
     };
 
     ddb.scan(params, onScan);
@@ -37,9 +37,7 @@ const getBlogs = (event, callback) => {
             }
         }
 
-        responseBody = {
-            "blogs": blogs
-        };
+        responseBody = blogs
 
         var response = {
             "statusCode": 200,
