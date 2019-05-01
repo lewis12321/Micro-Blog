@@ -17,7 +17,7 @@ const getBlog = (event, callback) => {
         var params = {
             TableName: 'blogs-dev',
             Key: {
-                'id': { S: id }
+                '_id': { S: id }
             }
         };
 
