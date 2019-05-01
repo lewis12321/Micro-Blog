@@ -4,10 +4,10 @@ cache:
   - node_modules
 script:
 - npm install -g serverless
-- pushd api/blogs
+- pushd backend/api/blogs
 - sls deploy -v
 - popd
-- pushd tests
+- pushd backend/tests
 - pip install pipenv
 - pipenv install
 - pipenv run py.test
