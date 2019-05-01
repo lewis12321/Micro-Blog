@@ -57,14 +57,11 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: _id
-            AttributeType: S
-          -
             AttributeName: id
             AttributeType: S
         KeySchema:
           -
-            AttributeName: _id
+            AttributeName: id
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: id-index

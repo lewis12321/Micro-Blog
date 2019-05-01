@@ -15,7 +15,7 @@ const deleteBlog = (event, callback) => {
     var params = {
         TableName: 'blogs-dev',
         Key: {
-            "_id": { S: _id }
+            "id": { S: id }
         }
     };
 
