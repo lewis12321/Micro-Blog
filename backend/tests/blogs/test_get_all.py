@@ -2,16 +2,16 @@ import uuid
 
 import requests
 
-from blogs import domain
+from blogs import base_url
 
 
 def test_get_all():
     # Given
     payload = {"title": str(uuid.uuid4()), "description": "The best description", "markdown": "# The best title"}
-    requests.post(f'https://{domain}/dev/api/blogs', json=payload)
+    requests.post(f'{base_url}/api/blogs', json=payload)
 
     # When
-    response = requests.get(f'https://{domain}/dev/api/blogs')
+    response = requests.get(f'{base_url}/api/blogs')
 
     # Then
     assert response.status_code == 200

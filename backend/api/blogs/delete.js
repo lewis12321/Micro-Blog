@@ -12,7 +12,7 @@ const deleteBlog = (event, callback) => {
     console.log(id)
 
     var params = {
-        TableName: 'blogs-dev',
+        TableName: process.env.DYNAMODB_TABLE,
         Key: {
             "id": { S: id }
         }

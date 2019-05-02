@@ -12,7 +12,7 @@ const getBlogs = (event, callback) => {
     var responseBody = {}
     
     var params = {
-        TableName: 'blogs-dev'
+        TableName: process.env.DYNAMODB_TABLE
     };
 
     ddb.scan(params, onScan);

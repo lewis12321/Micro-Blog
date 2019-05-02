@@ -15,7 +15,7 @@ const getBlog = (event, callback) => {
 
         var id = event.pathParameters.id;
         var params = {
-            TableName: 'blogs-dev',
+            TableName: process.env.DYNAMODB_TABLE,
             Key: {
                 'id': { S: id }
             }

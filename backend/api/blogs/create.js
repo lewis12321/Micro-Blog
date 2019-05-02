@@ -41,17 +41,19 @@ function validate(data) {
 const createBlog = (event, callback) => {
     const validation = validate(event.body)
     if (validation.validationResponse) {
-        console.log(`validation error validationResponse=${validationResponse}`)
+        console.log(`validation error validationResponse=${validation.validationResponse}`)
         callback(null, validation.validationResponse)
         return
     }
+
+    const blog = validation.parsed
 
     const uuid = uuidv1();
     const title = blog.title;
     const id = title.split(' ').join('-') + '-' + uuid.split('-')[0];
 
     const params = {
-        TableName: 'blogs-dev',
+        TableName: process.env.DYNAMODB_TABLE,
         Item: {
             'id': { S: id },
             'title': { S: title },
@@ -68,10 +70,8 @@ const createBlog = (event, callback) => {
         }
         console.log(`Saved blog=${blog} data=${data}`);
         callback(null, response(200, {
-            'id': id,
-            'title': title,
-            'description': description,
-            'markdown': markdown
+            ...blog,
+            'id': id
         }))
     });
 }

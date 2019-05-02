@@ -5,7 +5,8 @@ cache:
 script:
 - npm install -g serverless
 - pushd backend/api/blogs
-- sls deploy -v
+- sls deploy -v serverless deploy | tee deploy.out
+- export $(cat deploy.out | grep POST | awk -F" - " '{ print "BASE_URL="$2 }' | sed 's/\/api.*//g')  # Export base_url for tests
 - popd
 - pushd backend/tests
 - pip install pipenv
