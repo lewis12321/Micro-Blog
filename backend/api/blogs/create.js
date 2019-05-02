@@ -8,51 +8,70 @@ exports.handler = (event, ctx, callback) => {
     createBlog(event, callback);
 };
 
+function response(status, data) {
+    return {
+        "statusCode": status,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        "body": JSON.stringify(data),
+        "isBase64Encoded": false
+    };
+}
+
+function validate(data) {
+    try {
+        var blog = JSON.parse(data);
+    } catch(error) {
+        return {"validationResponse": response(400, {"error": "invalid JSON"})}
+    }
+
+    if (!blog.title) {
+        return {"validationResponse": response(400, {"error": "title is mandatory", "parsed": blog})}
+    }
+
+    if (!blog.markdown) {
+        return {"validationResponse": response(400, {"error": "markdown is mandatory", "parsed": blog})}
+    }
+
+    return {"parsed": blog}
+}
+
 const createBlog = (event, callback) => {
+    const validation = validate(event.body)
+    if (validation.validationResponse) {
+        console.log(`validation error validationResponse=${validationResponse}`)
+        callback(null, validation.validationResponse)
+        return
+    }
 
-    var blog = JSON.parse(event.body);
+    const uuid = uuidv1();
+    const title = blog.title;
+    const id = title.split(' ').join('-') + '-' + uuid.split('-')[0];
 
-    var uuid = uuidv1();
-    var title = blog.title;
-    var id = title.split(' ').join('-') + '-' + uuid.split('-')[0];
-    var description = blog.description;
-    var markdown = blog.markdown;
-
-    var params = {
+    const params = {
         TableName: 'blogs-dev',
         Item: {
             'id': { S: id },
             'title': { S: title },
-            'description': { S: description },
-            'markdown': { S: markdown }
+            'description': { S: blog.description },
+            'markdown': { S: blog.markdown }
         }
     };
 
-    ddb.putItem(params, function (err, data) {
-        var statusCode = 200
+    ddb.putItem(params, (err, data) => {
         if (err) {
-            statusCode = 500
-            console.log("Error", err);
-        } else {
-            console.log("Success", data);
+            console.log(`Failed to save data=${blog} error=${err}`);
+            callback(null, response(500, {}))
+            return
         }
-        var response = {
-            "statusCode": statusCode,
-            "headers": {
-                "statusCode": statusCode,
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            "body": JSON.stringify({
-                'id': id,
-                'title': title,
-                'description': description,
-                'markdown': markdown
-            }),
-            "isBase64Encoded": false
-        };
-
-        callback(null, response)
-
+        console.log(`Saved blog=${blog} data=${data}`);
+        callback(null, response(200, {
+            'id': id,
+            'title': title,
+            'description': description,
+            'markdown': markdown
+        }))
     });
 }
