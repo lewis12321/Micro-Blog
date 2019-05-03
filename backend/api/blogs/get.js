@@ -1,7 +1,9 @@
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
+const utils = require('./utils');
+
 AWS.config.update({ region: 'eu-west-2' });
 
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
 exports.handler = (event, ctx, callback) => {
     getBlog(event, callback)
@@ -9,88 +11,34 @@ exports.handler = (event, ctx, callback) => {
 
 const getBlog = (event, callback) => {
 
-    var responseBody = {}
-
-    if (event.pathParameters != null) {
-
-        var id = event.pathParameters.id;
-        var params = {
-            TableName: process.env.DYNAMODB_TABLE,
-            Key: {
-                'id': { S: id }
-            }
-        };
-
-        ddb.getItem(params, function (err, data) {
-
-            if (err) {
-                console.log("Error", err);
-
-                responseBody = {
-                    "event": event
-                };
-
-            } else {
-                console.log("Success", data.Item);
-                data = flatten(data.Item)
-                responseBody = data
-            }
-
-            var response = {
-                "statusCode": 200,
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                "body": JSON.stringify(responseBody),
-                "isBase64Encoded": false
-            };
-            callback(null, response)
-        });
-
-    } else {
-        responseBody = {
-            "blog": "ID FIELD IS EMPTY",
-            "event": event
-        };
-
-        var response = {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            "body": JSON.stringify(responseBody),
-            "isBase64Encoded": false
-        };
-
-        callback(null, response)
+    console.log(`get blog for id=${event.pathParameters.id}`)
+    if (!event.pathParameters || !event.pathParameters.id) {
+        console.log("Invalid request")
+        callback(null, utils.response(400, {}))
+        return
     }
 
-}
-
-function flatten(o) {
-
-    var descriptors = ['L', 'M', 'N', 'S'];
-    for (let d of descriptors) {
-        if (o.hasOwnProperty(d)) {
-            return o[d];
+    var id = event.pathParameters.id;
+    var params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Key: {
+            'id': { S: id }
         }
-    }
+    };
 
-    Object.keys(o).forEach((k) => {
+    ddb.getItem(params, function (err, data) {
+        if (err) {
+            console.log(`failed to get id=${id} error=${err}`);
+            callback(null, utils.response(500, {}))
+            return
+        }
 
-        for (let d of descriptors) {
-            if (o[k].hasOwnProperty(d)) {
-                o[k] = o[k][d];
-            }
+        if (!data.Item) {
+            callback(null, utils.response(404, {}))
+            return
         }
-        if (Array.isArray(o[k])) {
-            o[k] = o[k].map(e => flatten(e))
-        } else if (typeof o[k] === 'object') {
-            o[k] = flatten(o[k])
-        }
+
+        console.log(`got blog=${JSON.stringify(data.Item)}`);
+        callback(null, utils.response(200, utils.flatten(data.Item)))
     });
-
-    return o;
 }

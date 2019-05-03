@@ -15,9 +15,9 @@ def test_post():
     # Then
     assert response.status_code == 200
     assert payload["title"] in response.json()["id"]
-    assert payload["title"] == response.json()["title"]
-    assert payload["description"] == response.json()["description"]
-    assert payload["markdown"] == response.json()["markdown"]
+    assert response.json()["title"] == payload["title"]
+    assert response.json()["description"] == payload["description"]
+    assert response.json()["markdown"] == payload["markdown"]
 
 
 def test_post_not_json():

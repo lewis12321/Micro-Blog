@@ -1,45 +1,49 @@
 var AWS = require("aws-sdk");
+const utils = require('./utils');
+
 AWS.config.update({ region: "eu-west-2" });
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
 exports.handler = (event, ctx, callback) => {
     deleteBlog(event, callback);
 };
 
+function response(status, data) {
+    return {
+        "statusCode": status,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        "body": JSON.stringify(data),
+        "isBase64Encoded": false
+    };
+}
+
 const deleteBlog = (event, callback) => {
 
-    var id = event.pathParameters.id;
-    console.log(id)
+    console.log(`delete blog for id=${event.pathParameters.id}`)
+    if (!event.pathParameters || !event.pathParameters.id) {
+        console.log("Invalid request")
+        callback(null, utils.response(400, {}))
+        return
+    }
+    var id = event.pathParameters.id
 
     var params = {
         TableName: process.env.DYNAMODB_TABLE,
         Key: {
             "id": { S: id }
         }
-    };
+    }
 
-    console.log("Attempting delete...");
     ddb.deleteItem(params, function (err, data) {
-        var statusCode = 200
         if (err) {
             statusCode = 500
-            console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-        } else {
-            console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+            console.log(`could not delete id=${id} error=${err}`);
+            callback(null, utils.response(500, {}))
         }
-
-        var response = {
-            "statusCode": statusCode,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            "body": JSON.stringify(data),
-            "isBase64Encoded": false
-        };
-
-        callback(null, response)
-
+        callback(null, utils.response(200, id))
     });
 
 }

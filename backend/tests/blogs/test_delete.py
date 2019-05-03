@@ -18,14 +18,3 @@ def test_delete():
     # Then
     assert response.status_code == 200
     assert requests.get(f'{base_url}/api/blogs/{value["id"]}').status_code == 404
-
-
-def test_delete_not_found():
-    # Given
-    blog_id = uuid.uuid4()
-
-    # When
-    response = requests.delete(f'{base_url}/api/blogs/{blog_id}')
-
-    # Then
-    assert response.status_code == 404

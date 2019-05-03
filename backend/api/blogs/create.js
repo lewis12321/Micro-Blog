@@ -1,38 +1,28 @@
 const uuidv1 = require('uuid/v1');
-var AWS = require('aws-sdk');
+const utils = require('./utils');
+
+const AWS = require('aws-sdk');
 AWS.config.update({ region: 'eu-west-2' });
 
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
 exports.handler = (event, ctx, callback) => {
     createBlog(event, callback);
 };
 
-function response(status, data) {
-    return {
-        "statusCode": status,
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-        },
-        "body": JSON.stringify(data),
-        "isBase64Encoded": false
-    };
-}
-
 function validate(data) {
     try {
         var blog = JSON.parse(data);
     } catch(error) {
-        return {"validationResponse": response(400, {"error": "invalid JSON"})}
+        return {"validationResponse": utils.response(400, {"error": "invalid JSON"})}
     }
 
     if (!blog.title) {
-        return {"validationResponse": response(400, {"error": "title is mandatory", "parsed": blog})}
+        return {"validationResponse": utils.response(400, {"error": "title is mandatory", "parsed": blog})}
     }
 
     if (!blog.markdown) {
-        return {"validationResponse": response(400, {"error": "markdown is mandatory", "parsed": blog})}
+        return {"validationResponse": utils.response(400, {"error": "markdown is mandatory", "parsed": blog})}
     }
 
     return {"parsed": blog}
@@ -65,11 +55,11 @@ const createBlog = (event, callback) => {
     ddb.putItem(params, (err, data) => {
         if (err) {
             console.log(`Failed to save data=${blog} error=${err}`);
-            callback(null, response(500, {}))
+            callback(null, utils.response(500, {}))
             return
         }
         console.log(`Saved blog=${blog} data=${data}`);
-        callback(null, response(200, {
+        callback(null, utils.response(200, {
             ...blog,
             'id': id
         }))

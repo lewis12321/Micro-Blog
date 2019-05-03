@@ -16,6 +16,6 @@ def test_get_all():
     # Then
     assert response.status_code == 200
     value = next(filter(lambda i: i["title"] == payload["title"], list(response.json())))
-    assert value["title"] == payload["title"]
-    assert value["description"] == payload["description"]
-    assert value["markdown"] == payload["markdown"]
+    assert payload["title"] == value["title"]
+    assert payload["description"] == value["description"]
+    assert payload["markdown"] == value["markdown"]

@@ -1,81 +1,39 @@
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
+const utils = require('./utils');
+
 AWS.config.update({ region: 'eu-west-2' });
 
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
 exports.handler = (event, ctx, callback) => {
     getBlogs(event, callback)
 };
 
-const getBlogs = (event, callback) => {
-
-    var responseBody = {}
-    
-    var params = {
-        TableName: process.env.DYNAMODB_TABLE
-    };
-
-    ddb.scan(params, onScan);
-    var count = 0;
-    var blogs = []
-
-    function onScan(err, data) {
-        if (err) {
-            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-        } else {
-            console.log("Scan succeeded.");
-            data.Items.forEach(function (itemdata) {
-                console.log("Item :", ++count, itemdata);
-                blogs.push(flatten(itemdata))
-            });
-
-            // continue scanning if we have more items
-            if (typeof data.LastEvaluatedKey != "undefined") {
-                console.log("Scanning for more...");
-                params.ExclusiveStartKey = data.LastEvaluatedKey;
-                ddb.scan(params, onScan);
-            }
+async function getAllBlogs() {
+    let response = {}
+    let ExclusiveStartKey
+    const blogs = []
+    do {
+        response = await ddb.scan({
+            TableName: process.env.DYNAMODB_TABLE,
+            Limit: 500,
+            ExclusiveStartKey
+        }).promise()
+        const items = response.Items
+        for (let item of items) {
+            blogs.push(utils.flatten(item))
         }
-
-        responseBody = blogs
-
-        var response = {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            "body": JSON.stringify(responseBody),
-            "isBase64Encoded": false
-        };
-        callback(null, response)
-
-    }
-
+        ExclusiveStartKey = response.LastEvaluatedKey
+    } while (response.LastEvaluatedKey)
+    return blogs
 }
 
-function flatten(o) {
-
-    var descriptors = ['L', 'M', 'N', 'S'];
-    for (let d of descriptors) {
-        if (o.hasOwnProperty(d)) {
-            return o[d];
-        }
+const getBlogs = async (event, callback) => {
+    console.log("getting all blogs")
+    try {
+        callback(null, utils.response(200, await getAllBlogs()))
+    } catch (error) {
+        callback(null, utils.response(500, {}))
     }
 
-    Object.keys(o).forEach((k) => {
-
-        for (let d of descriptors) {
-            if (o[k].hasOwnProperty(d)) {
-                o[k] = o[k][d];
-            }
-        }
-        if (Array.isArray(o[k])) {
-            o[k] = o[k].map(e => flatten(e))
-        } else if (typeof o[k] === 'object') {
-            o[k] = flatten(o[k])
-        }
-    });
-
-    return o;
 }

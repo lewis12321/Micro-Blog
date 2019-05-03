@@ -17,9 +17,9 @@ def test_get():
 
     # Then
     assert response.status_code == 200
-    assert value["title"] == response.json()["title"]
-    assert value["description"] == response.json()["description"]
-    assert value["markdown"] == response.json()["markdown"]
+    assert response.json()["title"] == value["title"]
+    assert response.json()["description"] == value["description"]
+    assert response.json()["markdown"] == value["markdown"]
 
 
 def test_get_not_found():
@@ -31,3 +31,4 @@ def test_get_not_found():
 
     # Then
     assert response.status_code == 404
+
